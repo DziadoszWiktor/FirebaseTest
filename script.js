@@ -1,13 +1,9 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { collection, doc, getDocs, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 
-//import {getDatabase, ref, set, child, update, remove} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js'
-import { collection, doc, getDocs, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js'
+import { getStorage, ref, uploadString } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDpRlGDGuk1JUXi0VhvSpVcJwcCm1Q2ep8",
     authDomain: "cars-cf954.firebaseapp.com",
@@ -17,15 +13,11 @@ const firebaseConfig = {
     appId: "1:943137422806:web:60df9a425e9cf25a26b877"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 const querySnapshot = await getDocs(collection(db, "cars"));
-
     var but = document.getElementById("submit")
-    
     refresh()
     but.addEventListener("click", async function(event, make ="default", model = "default", engine = "default", color = "default"){
         
@@ -34,46 +26,74 @@ const querySnapshot = await getDocs(collection(db, "cars"));
         engine = document.getElementById("silnik").value;
         color = document.getElementById("kolor").value;
         let r = (Math.random() + 1).toString(36).substring(7);
-        await setDoc(doc(db, "cars", "new "+r), {
+
+        await setDoc(doc(db, "cars", r), {
             make: make,
             model: model,
             engine: engine,
             color: color
-            });
+        });
+
+        const storage = getStorage();
+        const refImg = ref(storage, pathImage);
+        uploadString(refImg, selectedFile64,'data_url').then((snapshot) =>{
+            console.log("The photo has been sent in path cars/"+id+".jpg");
+        })
+
         refresh()
         })
 
-async function refresh(){
-    // Read data
-    let element = document.getElementById("cars")
-    element.innerHTML = "<table border=1 style='border:1px solid;border-color:black;'>"
-    element.innerHTML = "<tr><th>Marka</th><th>Model</th><th>Silnik</th><th>Color</th></tr>"
-    const querySnapshot2 = await getDocs(collection(db, "cars"));
-    querySnapshot2.forEach((doc) => {
-        console.log(doc.data());
-        console.log(doc.data()['make'],doc.data()['model'],doc.data()['engine'],doc.data()['color']);
-
-        console.log(element)
-        let elementProduct = document.createElement("div")
-        elementProduct.innerHTML = " <tr> <td>"+doc.data()['make'] +"</td>"+' <td> '+ doc.data()['model']+' '+"</td> <td>"+doc.data()['engine'] +"</td>"+ ' <td>'+ doc.data()['color']+ "</td> </tr>"
-        
-        element.appendChild(elementProduct)
+    async function refresh(){
+        let element = document.getElementById("cars")
+        element.innerHTML = "<table border=1 style='border:1px solid;border-color:black;'>"
+        element.innerHTML = "<tr><th>Marka</th><th>Model</th><th>Silnik</th><th>Color</th></tr>"
+        const querySnapshot2 = await getDocs(collection(db, "cars"));
+        querySnapshot2.forEach((doc) => {
+            //console.log(doc.data());
+            //console.log(doc.data()['make'],doc.data()['model'],doc.data()['engine'],doc.data()['color']);
+            //console.log(element)
+            let elementProduct = document.createElement("div")
+            elementProduct.innerHTML = " <tr> <td>"+doc.data()['make'] +"</td>"+' <td> '+ doc.data()['model']+' '+"</td> <td>"+doc.data()['engine'] +"</td>"+ ' <td>'+ doc.data()['color']+ "</td> </tr>"
+            
+            element.appendChild(elementProduct)
     });
     element.innerHTML = element.innerHTML +"</table>"
-}
+} 
 
-//window.onload = refresh();
-
-
-
+document.getElementById('cameraFileInput').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function () {
+        var imageBase64String = reader.result;
+        document.getElementById('pictureFromCamera').src = imageBase64String;
+    }
+    reader.readAsDataURL(file);
+});
 
 /*
-var CarMake = document.getElementById("marka");
-var CarModel = document.getElementById("model");
-var CarEngine = document.getElementById("silnik");
-var CarColor = document.getElementById("kolor");
+var file = document.querySelector('input[type=file]')['files'][0];
+var reader = new FileReader();
+console.log("reader init");
+reader.onload = function () {
+    this.selectedFile64 = reader.result;
+    this.imageBase64Stringsep = this.selectedFile64;
 
-var SubmitButton = document.getElementById("submit");
-var LoadButton = document.getElementById("load");
-*/
+    console.log(this.selectedFile64);
+    
+    document.getElementById("pictureFromCamera").setAttribute("src",this.selectedFile64)
+    const desc = document.getElementById('desc').value
+    const email = auth.currentUser.email
+    const username = email.substring(0, email.indexOf('@'));
+    const name = document.getElementById('name').value
+    const id = username+"-"+name+"-"+desc
+    console.log(id); 
+    this.pathImage = 'cars/'+id+'.jpg';
+    //db.collection('posts').where("path", "==", "").update({path:this.pathImage});
+    const refImg = reff(storage, this.pathImage);
+    uploadString(refImg,this.selectedFile64,'data_url').then((snapshot) =>{
+        console.log("The photo has been sent in path cars/"+id+".jpg");
+    });
+}
+reader.readAsDataURL(file);*/
+
 

@@ -17,8 +17,28 @@
 
   <body>
     <!--<script type="module" src="script.js"></script>-->
-    <script type="module" src="script.js"></script>
-
+    <script type="module" src="test.js"></script>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarCenteredExample">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">A</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav text-center mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">B</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">C</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     <div class="container-fluid p-5 bg-primary text-white text-center">
       <h1>Firebase Cloud Storage</h1>
       <p>Add and read values from database</p>
@@ -42,8 +62,21 @@
           <label class="form-label">Kolor</label>
           <input type="text" class="form-control" id="kolor" placeholder="Wpisz kolor samochodu" style="width: 400px;">
         </div>
-        <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+        <button type="button" class="btn btn-primary" id="submit">Submit</button>
         <!--<button type="submit" class="btn btn-primary" id="load">Load</button>-->
+        <label for="cameraFileInput">
+          <span class="btn btn-primary">Open Photo</span>
+          <!-- The hidden file `input` for opening the native camera  type="file"  -->
+          <input
+            @change="openCamera"
+            style="display:none"
+            id="cameraFileInput"
+            type="file"
+            accept="image/*"
+            capture="environment"
+          />
+        </label><br>
+        <img id="pictureFromCamera" class="img-fluid"/>
       </form>
     </div>
 
